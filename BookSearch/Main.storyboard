@@ -23,7 +23,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-143" y="116"/>
+            <point key="canvasLocation" x="-854" y="904"/>
         </scene>
         <!--今週の新刊-->
         <scene sceneID="aBy-Uu-W44">
@@ -47,12 +47,17 @@
                                     <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="h0E-R7-0FY">
+                                        <imageView userInteractionEnabled="NO" tag="1" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="iYE-NA-mSo">
                                             <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         </imageView>
                                     </subviews>
                                 </view>
+                                <constraints>
+                                    <constraint firstItem="iYE-NA-mSo" firstAttribute="top" secondItem="Sfj-Yx-euS" secondAttribute="top" id="BYE-ao-cJs"/>
+                                    <constraint firstAttribute="bottom" secondItem="iYE-NA-mSo" secondAttribute="bottom" id="WLa-ZU-m0J"/>
+                                    <constraint firstItem="iYE-NA-mSo" firstAttribute="leading" secondItem="Sfj-Yx-euS" secondAttribute="leading" id="hzb-ub-DFH"/>
+                                    <constraint firstAttribute="trailing" secondItem="iYE-NA-mSo" secondAttribute="trailing" id="rzb-ed-TZx"/>
+                                </constraints>
                             </collectionViewCell>
                         </cells>
                         <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="SectionHeader" id="1WF-YH-Rb5" customClass="SectionHeader" customModule="BookSearch" customModuleProvider="target">
@@ -76,11 +81,14 @@
                             <outlet property="delegate" destination="efe-L7-Rcy" id="Qv5-ov-ANd"/>
                         </connections>
                     </collectionView>
-                    <tabBarItem key="tabBarItem" title="今週の新刊" image="book" id="gsS-Cb-6wD"/>
+                    <navigationItem key="navigationItem" title="今週の新刊" id="DBK-Df-8AB"/>
+                    <connections>
+                        <segue destination="owy-5z-6zB" kind="show" identifier="DetailsSegue" id="6qA-hS-HWr"/>
+                    </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Aq9-KQ-dO5" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-143.19999999999999" y="903.59820089955031"/>
+            <point key="canvasLocation" x="2206" y="904"/>
         </scene>
         <!--Details View Controller-->
         <scene sceneID="A2e-lJ-dKZ">
@@ -90,45 +98,40 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tKa-9L-HwQ">
-                                <rect key="frame" x="10" y="25" width="34" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Back"/>
-                            </button>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="n21-sg-h80">
-                                <rect key="frame" x="16" y="58" width="196" height="260"/>
+                            <imageView userInteractionEnabled="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="n21-sg-h80">
+                                <rect key="frame" x="15" y="83" width="196" height="260"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="タイトル" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bzY-jh-ivo">
-                                <rect key="frame" x="220" y="60" width="70" height="21"/>
+                                <rect key="frame" x="219" y="83" width="70" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ry1-gX-4w8">
-                                <rect key="frame" x="220" y="91" width="42" height="20.5"/>
+                                <rect key="frame" x="220" y="103" width="42" height="20.5"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="著者" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e7P-yq-aFs">
-                                <rect key="frame" x="220" y="131.5" width="35" height="21"/>
+                                <rect key="frame" x="220" y="140" width="35" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Q4P-5S-9cJ">
-                                <rect key="frame" x="220" y="162.5" width="42" height="20.5"/>
+                                <rect key="frame" x="220" y="169" width="42" height="20.5"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="出版社" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mnU-no-5x3">
-                                <rect key="frame" x="220" y="203" width="52" height="21"/>
+                                <rect key="frame" x="219" y="205" width="52" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
@@ -142,21 +145,14 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="価格" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CrU-79-uky">
-                                <rect key="frame" x="220" y="274.5" width="35" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ikV-bY-tYN">
-                                <rect key="frame" x="220" y="305.5" width="42" height="20.5"/>
+                                <rect key="frame" x="220" y="273" width="35" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="概要" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sWo-6H-CTj">
-                                <rect key="frame" x="15" y="326" width="35" height="21"/>
+                                <rect key="frame" x="15" y="370" width="35" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
@@ -181,30 +177,62 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="xx月xx日発売" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uHd-5I-3yX">
+                                <rect key="frame" x="220" y="330" width="104" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ikV-bY-tYN">
+                                <rect key="frame" x="219" y="302" width="42" height="20.5"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="wTZ-ZM-1Jn"/>
                     </view>
+                    <connections>
+                        <outlet property="imageView" destination="n21-sg-h80" id="ovF-rH-ghy"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mhR-gj-Zdm" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2072.8000000000002" y="115.59220389805098"/>
+            <point key="canvasLocation" x="3210" y="904"/>
         </scene>
         <!--お気に入り-->
         <scene sceneID="0Zs-Dk-6VR">
             <objects>
-                <viewController storyboardIdentifier="Like" id="Y4r-vC-VAZ" customClass="LikeViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="Like" id="Y4r-vC-VAZ" customClass="LikeViewController" customModule="BookSearch" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="PKW-gl-UAk">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="ztu-0c-CLm">
+                                <rect key="frame" x="0.0" y="64" width="375" height="554"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </tableView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="dyV-aE-Zqo" firstAttribute="trailing" secondItem="ztu-0c-CLm" secondAttribute="trailing" id="FqO-Cg-hyC"/>
+                            <constraint firstItem="dyV-aE-Zqo" firstAttribute="bottom" secondItem="ztu-0c-CLm" secondAttribute="bottom" id="ZiF-Wc-hw1"/>
+                            <constraint firstItem="ztu-0c-CLm" firstAttribute="top" secondItem="dyV-aE-Zqo" secondAttribute="top" id="laX-Lo-HeF"/>
+                            <constraint firstItem="ztu-0c-CLm" firstAttribute="leading" secondItem="dyV-aE-Zqo" secondAttribute="leading" id="yKo-FO-S4S"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="dyV-aE-Zqo"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="お気に入り" image="suter" id="0Ru-HW-zBK"/>
+                    <navigationItem key="navigationItem" title="お気に入り" id="2Jh-cI-Eow"/>
+                    <connections>
+                        <outlet property="tableView" destination="ztu-0c-CLm" id="Za9-bS-uj1"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="R9y-M5-A0E" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1362" y="904"/>
+            <point key="canvasLocation" x="2207" y="182"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="ocF-gD-Wgw">
@@ -216,14 +244,14 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBar>
                     <connections>
-                        <segue destination="efe-L7-Rcy" kind="relationship" relationship="viewControllers" id="yIt-Xe-crw"/>
-                        <segue destination="j9h-bJ-xn8" kind="relationship" relationship="viewControllers" id="toW-AZ-59L"/>
-                        <segue destination="Y4r-vC-VAZ" kind="relationship" relationship="viewControllers" id="pfg-SP-0Qz"/>
+                        <segue destination="biy-ha-rDD" kind="relationship" relationship="viewControllers" id="iTz-ez-9K6"/>
+                        <segue destination="fIL-qs-RzI" kind="relationship" relationship="viewControllers" id="toW-AZ-59L"/>
+                        <segue destination="jQT-Tr-nIH" kind="relationship" relationship="viewControllers" id="pfg-SP-0Qz"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wsC-vv-Rv7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="590" y="116"/>
+            <point key="canvasLocation" x="665" y="904"/>
         </scene>
         <!--Login View Controller-->
         <scene sceneID="jXI-xt-xRt">
@@ -292,7 +320,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="h7h-yx-VP7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1361" y="116"/>
+            <point key="canvasLocation" x="-92" y="904"/>
         </scene>
         <!--設定-->
         <scene sceneID="Tl1-3W-mdz">
@@ -317,11 +345,68 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Zzo-Di-VTg"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="設定" image="setting" id="khF-dd-Pia"/>
+                    <navigationItem key="navigationItem" title="設定" id="DI6-LI-c6C"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6bJ-5M-09l" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="590" y="904"/>
+            <point key="canvasLocation" x="2206" y="1649"/>
+        </scene>
+        <!--今週の新刊-->
+        <scene sceneID="HTL-mn-mP0">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="biy-ha-rDD" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="今週の新刊" image="book" id="gsS-Cb-6wD"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="k8U-cH-iUu">
+                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="efe-L7-Rcy" kind="relationship" relationship="rootViewController" id="02A-wq-fdN"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Fvj-04-wBX" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1393" y="904"/>
+        </scene>
+        <!--設定-->
+        <scene sceneID="Saz-Qh-xsP">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="fIL-qs-RzI" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="設定" image="setting" id="khF-dd-Pia"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="6PQ-wC-J3c">
+                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="j9h-bJ-xn8" kind="relationship" relationship="rootViewController" id="Ed4-EJ-CkL"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="CXR-bH-yvI" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1393" y="1649"/>
+        </scene>
+        <!--お気に入り-->
+        <scene sceneID="zbE-xs-dx6">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="jQT-Tr-nIH" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="お気に入り" image="suter" id="0Ru-HW-zBK"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="1i0-wx-QI2">
+                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="Y4r-vC-VAZ" kind="relationship" relationship="rootViewController" id="UXP-oB-T0B"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="cps-ER-bUu" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1393" y="183"/>
         </scene>
     </scenes>
     <resources>

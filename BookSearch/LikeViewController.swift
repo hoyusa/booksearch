@@ -6,4 +6,14 @@
 //  Copyright © 2019 許 裕士. All rights reserved.
 //
 
-import Foundation
+import UIKit
+import Firebase
+import FirebaseAuth
+import FirebaseDatabase
+
+class LikeViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+    
+    @IBOutlet weak var tableView: UITableView!
+    
+    
+}
