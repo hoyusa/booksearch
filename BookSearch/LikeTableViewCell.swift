@@ -13,27 +13,37 @@ class LikeTableViewCell: UITableViewCell {
     @IBOutlet weak var bookImageView: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
-
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
     }
-
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
+        
         // Configure the view for the selected state
     }
     
-    func setBookData(_ bookData: BookData) {
-        self.bookImageView.image = bookData.image
+    func setItemData(_ bookData: ItemData) {
+        if let url = bookData.largeImageUrl {
+            bookImageView.image = getImageByUrl(url: url)
+        }
         
-        self.titleLabel.text = "\(bookData.title!)"
-        
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        let dateString = formatter.string(from: bookData.salesDate!)
-        self.dateLabel.text = dateString
+        self.titleLabel.text = bookData.title
+        self.dateLabel.text = bookData.salesDate
+    }
+    
+    func getImageByUrl(url: String) -> UIImage?{
+        let url = URL(string: url)
+        do {
+            let data = try Data(contentsOf: url!)
+            return UIImage(data: data)!
+        } catch let err {
+            print("Error : \(err.localizedDescription)")
+            return UIImage(named: "default")
+        }
+        // return UIImage()
     }
     
 }

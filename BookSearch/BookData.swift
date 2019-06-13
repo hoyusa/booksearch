@@ -9,8 +9,43 @@
 import UIKit
 import Firebase
 import FirebaseDatabase
+import SwiftyJSON
 
 class BookData: NSObject {
+    var itemArray:[ItemData] = []
+    
+    let url: URL = URL(string: "https://app.rakuten.co.jp/services/api/BooksTotal/Search/20170404?format=json&size=9&booksGenreId=001&applicationId=1070782050507759834")!
+    
+    let task: URLSessionTask = URLSession.shared.dataTask(with: url, completionHandler: {data, response, error in
+        
+        guard let data = data else { return }
+        do {
+            guard let json = try JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.allowFragments) as? [String: Any] else { return }
+            print(json)
+            
+            print(json.count)
+            
+            guard let items = json["Items"] as? [Any] else { return }
+            
+            for item in items {
+                guard let dic = item as? [String: Any] else { continue }
+                self.itemArray.append(ItemData(data: dic))
+            }
+            
+            /*if let items = json["Items"] as? [Any], let itemFirst = items.first as? [String: Any], let item = itemFirst["Item"] as? [String: Any] {
+             let title = item["title"] as? String ?? ""
+             print(title)
+             }*/
+            
+        } catch {
+            
+            //エラー処理
+        }
+    })
+    task.resume()
+}
+
+class itemData: NSObject {
     var id: String?
     var title: String?
     var image: UIImage?
