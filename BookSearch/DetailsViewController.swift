@@ -14,20 +14,15 @@ import FirebaseDatabase
 class DetailsViewController: UIViewController {
     
     var selectedImg: UIImage!
-    var selectTitle: String?
-    var selectAuthor: String?
-    var selectPublisherName: String?
-    var selectPrice: String?
-    var selectCaption: String?
-    var selectReviewAverage: String?
-    var selectSalesDate: String?
-    
     
     //↓選択したセルのデータが格納されてる
     var selectBookData: ItemData!
+    //↓お気に入り登録したデータのISBNを入れてる
+    var favoriteArray:[ItemData] = []
     
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var sizeLabel: UILabel!
     @IBOutlet weak var authorLabel: UILabel!
     @IBOutlet weak var publisherNameLabel: UILabel!
     @IBOutlet weak var itemPriceLabel: UILabel!
@@ -35,70 +30,78 @@ class DetailsViewController: UIViewController {
     @IBOutlet weak var salesDateLabel: UILabel!
     @IBOutlet weak var itemCaptionLabel: UILabel!
     @IBOutlet weak var likeSuter: UIButton!
-
+    
     @IBAction func likeButton(_ sender: Any) {
         print("likeButtonが押されたよ")
         
-        //print(selectBookData.id)
-        //Firebaseにデータ保存する準備
-        if let uid = Auth.auth().currentUser?.uid {
-            if selectBookData.isLiked {
-                // すでにいいねをしていた場合はいいねを解除するためIDを取り除く
-                var index = -1
-                for likeId in selectBookData.likes {
-                    if likeId == uid {
-                        // 削除するためにインデックスを保持しておく
-                        index = selectBookData.likes.index(of: likeId)!
-                        break
-                    }
-                }
-                selectBookData.likes.remove(at: index)
-            } else {
-                selectBookData.likes.append(uid)
-            }
-            
-            // 辞書を作成してFirebaseに保存する
-            let postRef = Database.database().reference().child(Const.PostPath)
-            let postDic = ["title": selectBookData.title, "author": selectBookData.author, "publisherName": selectBookData.publisherName, "itemPrice": selectBookData.itemPrice, "reviewAverage": selectBookData.reviewAverage, "salesDate": selectBookData.salesDate, "mediumImageUrl": selectBookData.mediumImageUrl, "largeImageUrl": selectBookData.largeImageUrl, "likes": selectBookData.likes, "isLiked": selectBookData.isLiked] as [String : Any]
-            postRef.childByAutoId().setValue(postDic)
-            
-            /*
-            // 増えたlikesをFirebaseに保存する
-            print(selectBookData.id)
-            let postRef = Database.database().reference().child(Const.PostPath)
-            let likes = ["likes": selectBookData.likes, "isLiked": selectBookData.isLiked] as [String : Any]
-            postRef.updateChildValues(likes)
-        }
-        */
-            
-        if selectBookData.isLiked {
-            let buttonImage = UIImage(named: "likesuter")
-            likeSuter.setImage(buttonImage, for: .normal)
+        // 辞書を作成してFirebaseに保存する
+        let postRef = Database.database().reference().child(Const.PostPath).child(selectBookData.isbn!)
+        
+        if selectBookData.isLiked{
+            //削除
+            postRef.removeValue()
         } else {
-            let buttonImage = UIImage(named: "suter")
-            likeSuter.setImage(buttonImage, for: .normal)
+            postRef.setValue(selectBookData.postData)
         }
+        updateButton(isLiked: !selectBookData.isLiked)
+        
     }
     
-//    func setItemData(_ itemData: ItemData) {
-//
-//    }
-    }
     override func viewDidLoad() {
         super.viewDidLoad()
-        titleLabel.text = selectTitle
-        authorLabel.text = selectAuthor
-        publisherNameLabel.text = selectPublisherName
-        itemPriceLabel.text = ("￥\(selectPrice!)")
-        reviewAverageLabel.text = selectReviewAverage
-        salesDateLabel.text = selectSalesDate
-        itemCaptionLabel.text = selectCaption
         
-        print(selectBookData.title)
+        //itemCaptionが空だったら文字列を代入する
+        if selectBookData.itemCaption?.isEmpty ?? true {
+            selectBookData.itemCaption = "概要が登録されていません"
+        }
+        
+        //各値をUI部品に設定
+        titleLabel.text = selectBookData.title
+        sizeLabel.text = selectBookData.size
+        authorLabel.text = selectBookData.author
+        publisherNameLabel.text = selectBookData.publisherName
+        itemPriceLabel.text = ("￥\(selectBookData.itemPrice!)")
+        reviewAverageLabel.text = ("レビュー平均：\(selectBookData.reviewAverage!)")
+        salesDateLabel.text = ("発売日：\(selectBookData.salesDate!)")
+        itemCaptionLabel.text = selectBookData.itemCaption
         
         imageView.image = selectedImg
         // 画像のアスペクト比を維持しUIImageViewサイズに収まるように表示
         imageView.contentMode = UIView.ContentMode.scaleAspectFit
+        
+        fetchFavorite()
+    }
+    
+    
+    func fetchFavorite() {
+        
+        //let postRef = Database.database().reference().child(Const.PostPath)
+        let postRef = Database.database().reference().child(Const.PostPath).child(selectBookData.isbn!)
+        //let query = postRef.queryOrdered(byChild: "isbn").queryEqual(toValue: selectBookData.isbn)
+        
+        postRef.observeSingleEvent(of: .value, with:  { (snapshot) in
+            print(snapshot.value)
+            guard let postDict = snapshot.value as? [String : Any] else {
+                self.updateButton(isLiked: false)
+                return
+            }
+            self.updateButton(isLiked: true)
+            //self.favoriteArray.append(ItemData(data: postDict))
+        })
+    }
+    
+    //ボタン状態の更新を行うメソッド
+    func updateButton(isLiked: Bool) {
+        if isLiked {
+            let buttonImage = UIImage(named: "likesuter")
+            likeSuter.setImage(buttonImage, for: .normal)
+            print("お気に入りに登録したよ")
+        } else {
+            let buttonImage = UIImage(named: "suter")
+            likeSuter.setImage(buttonImage, for: .normal)
+            print("お気に入り解除したよ")
+        }
+        selectBookData.isLiked = isLiked
     }
     
 }

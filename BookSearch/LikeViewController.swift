@@ -16,13 +16,14 @@ class LikeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     @IBOutlet weak var tableView: UITableView!
     
     var bookArray: [ItemData] = []
+    var selectCell: ItemData!
+    var selectedImage: UIImage?
     
     // DatabaseのobserveEventの登録状態を表す
     var observing = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         tableView.delegate = self
         tableView.dataSource = self
         
@@ -46,35 +47,38 @@ class LikeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
         if Auth.auth().currentUser != nil {
             if self.observing == false {
-                // 要素が追加されたらpostArrayに追てTableViewを再表示する
+                // 要素が追加されたらbookArrayに追加してTableViewを再表示する
                 let booksRef = Database.database().reference().child(Const.PostPath)
                 booksRef.observe(.childAdded, with: { snapshot in
                     print("DEBUG_PRINT: .childAddedイベントが発生しました。")
                     
-                    // PostDataクラスを生成して受け取ったデータを設定する
-                    if let uid = Auth.auth().currentUser?.uid {
-                        let bookData = ItemData(snapshot: snapshot, myId: uid)
-                        self.bookArray.insert(bookData, at: 0)
-                        
-                        // TableViewを再表示する
-                        self.tableView.reloadData()
-                    }
+                    // bookDataクラスを生成して受け取ったデータを設定する
+                    
+                    guard let valueDictionary = snapshot.value as? [String: Any] else {return}
+                    let bookData = ItemData(data: valueDictionary)
+                    self.bookArray.insert(bookData, at: 0)
+                    // TableViewを再表示する
+                    self.tableView.reloadData()
+                    
+                    
                 })
                 // 要素が変更されたら該当のデータをpostArrayから一度削除した後に新しいデータを追加してTableViewを再表示する
                 booksRef.observe(.childChanged, with: { snapshot in
                     print("DEBUG_PRINT: .childChangedイベントが発生しました。")
-                    if let uid = Auth.auth().currentUser?.uid {
-                        // ItemDataクラスを生成して受け取ったデータを設定する
-                        let bookData = ItemData(snapshot: snapshot, myId: uid)
-                        
-                        // 保持している配列からidが同じものを探す
-                        var index: Int = 0
-                        for book in self.bookArray {
-                            if book.id == bookData.id {
-                                index = self.bookArray.index(of: book)!
-                                break
-                            }
+                    
+                    
+                    // ItemDataクラスを生成して受け取ったデータを設定する
+                    guard let valueDictionary = snapshot.value as? [String: Any] else {return}
+                    let bookData = ItemData(data: valueDictionary)
+                    
+                    // 保持している配列からisbnが同じものを探す
+                    var index: Int = 0
+                    for book in self.bookArray {
+                        if book.isbn == bookData.isbn {
+                            index = self.bookArray.index(of: book)!
+                            break
                         }
+                        
                         
                         // 差し替えるため一度削除する
                         self.bookArray.remove(at: index)
@@ -85,6 +89,31 @@ class LikeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                         // TableViewを再表示する
                         self.tableView.reloadData()
                     }
+                    
+                })
+                
+                //セルの削除をするメソッド
+                booksRef.observe(.childRemoved, with: { snapshot in
+                    print("DEBUG_PRINT: .childremovedイベントが呼ばれました。")
+                    
+                    // ItemDataクラスを生成して受け取ったデータを設定する
+                    guard let valueDictionary = snapshot.value as? [String: Any] else {return}
+                    let bookData = ItemData(data: valueDictionary)
+                    
+                    // 保持している配列からisbnが同じものを探す
+                    var index: Int = 0
+                    for book in self.bookArray {
+                        if book.isbn == bookData.isbn {
+                            index = self.bookArray.index(of: book)!
+                            break
+                        }
+                    }
+                    // 差し替えるため一度削除する
+                    self.bookArray.remove(at: index)
+                    
+                    // TableViewを再表示する
+                    self.tableView.reloadData()
+                    
                 })
                 
                 // DatabaseのobserveEventが上記コードにより登録されたため
@@ -107,9 +136,52 @@ class LikeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
     }
     
+    //セルのスライド削除をするデリゲートメソッド
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        
+        if editingStyle == .delete {
+            //選択したセルの情報をselectCellDataに格納
+            let selectCellData = self.bookArray[indexPath.row]
+            //postRefにFirevaseの選択したセル情報を格納する
+            let postRef = Database.database().reference().child(Const.PostPath).child(selectCellData.isbn!)
+            //Firebaseの選択セル情報を削除
+            postRef.removeValue()
+        }
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return bookArray.count
     }
+    
+    //セルがタップされた際に書籍詳細画面に遷移するメソッド
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath:IndexPath) {
+        print(bookArray[indexPath.row])
+        
+        //DetailsViewControllerに渡す値をセット
+        selectCell = bookArray[indexPath.row]
+        
+        if let url = selectCell.largeImageUrl {
+            print(selectCell.largeImageUrl)
+            selectedImage = getImageByUrl(url: url)
+        }
+        
+        //DetailsViewControllerへ遷移するSegueを呼び出す
+        performSegue(withIdentifier: "SelectCellSegue",sender: nil)
+    }
+    
+    // Segueで遷移時の処理
+    override func prepare(for segue: UIStoryboardSegue, sender: Any!) {
+        if (segue.identifier == "SelectCellSegue") {
+            guard  let subVC: DetailsViewController = segue.destination as? DetailsViewController else{
+                return
+            }
+            
+            //DetailsViewControllerに選択したセル情報を設定する
+            subVC.selectBookData = selectCell
+            subVC.selectedImg = self.selectedImage
+        }
+    }
+    
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // セルを取得してデータを設定する
@@ -117,6 +189,18 @@ class LikeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         cell.setItemData(bookArray[indexPath.row])
         
         return cell
+    }
+    
+    //文字列を元にimageを取得するメソッド
+    func getImageByUrl(url: String) -> UIImage?{
+        let url = URL(string: url)
+        do {
+            let data = try Data(contentsOf: url!)
+            return UIImage(data: data)!
+        } catch let err {
+            print("Error : \(err.localizedDescription)")
+            return UIImage(named: "default")
+        }
     }
     
 }

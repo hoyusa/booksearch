@@ -7,20 +7,11 @@
 //
 
 import UIKit
-
 private let reuseIdentifier = "Cell"
 
 class CollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
-    let photos = ["item0.jpg", "item1.jpg", "item2.jpg", "item3.jpg", "item4.jpg", "item5.jpg"]
     var selectedImage: UIImage?
-    var itemTitle: String?
-    var itemAuthor: String?
-    var itemPublisherName: String?
-    var itemPrice: Int? = 0
-    var itemCaption: String?
-    var itemReviewAverage: String?
-    var itemSalesDate: String?
     var selectItemData: ItemData?
     
     //private let bookData = BookData()
@@ -37,7 +28,6 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
         
         //self.bookData.delegate = self
         let bookData = BookData()
-        //var postArray: [ItemData] = []
         bookData.getBookData { [weak self] items in
             guard let self = self else { return }
             guard let items = items else {
@@ -46,7 +36,6 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
                 return
             }
             self.itemData = items
-            //self.collectionView.reloadData()
         }
         
     }
@@ -59,7 +48,6 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
     
     //セルの数を指定するメソッド
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        //        return photos.count
         return self.itemData.count
     }
     
@@ -72,7 +60,13 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
         return CGSize(width: width, height: height)
     }
     
-    //セルの余白を設定するメソッド
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        //外枠のマージン(top , left , bottom , right)
+        return UIEdgeInsets(top: 20 , left:  0, bottom: 20 , right: 0 )
+    }
+    
+    //セル間の余白を設定するメソッド
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         
         return CGFloat(0)
@@ -81,16 +75,12 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
     //セルのイメージ部分を色々しているメソッド
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell: UICollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
-        // Tag番号を使ってImageViewのインスタンス生成
         
+        // Tag番号を使ってImageViewのインスタンス生成
         print("DEBUG*cell*** \(cell) ****")
         let imageView = cell.viewWithTag(1) as! UIImageView
         imageView.image = UIImage(named: "default")
         print("DEBUG*image*** \(imageView) ****")
-        // 画像配列の番号で指定された要素の名前の画像をUIImageとする
-        //        let cellImage = UIImage(named: photos[indexPath.row])
-        //        // UIImageをUIImageViewのimageとして設定
-        //cell.backgroundColor = .red
         
         print(self.itemData[indexPath.row])
         let item = self.itemData[indexPath.row]
@@ -112,20 +102,10 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
         
         print(item.isLiked)
         
-        itemTitle = item.title
-        itemAuthor = item.author
-        itemPublisherName = item.publisherName
-        itemPrice = item.itemPrice
-        itemCaption = item.itemCaption
-        itemReviewAverage = item.reviewAverage
-        itemSalesDate = item.salesDate
-        print(item)
-        
         let selectItemData = self.itemData[indexPath.row]
         print(selectItemData.title)
         
         self.selectItemData = selectItemData
-        print("😄😄😄😄😄😄😄\(self.selectItemData!.title)")
         
         if let url = item.largeImageUrl {
             selectedImage = getImageByUrl(url: url)
@@ -144,17 +124,8 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
             }
             // SubViewController のselectedImgに選択された画像を設定する
             // 選択されたセルのデータをDetailsViewConrtollerに渡してる
-
-            subVC.selectedImg = selectedImage
-            subVC.selectTitle = itemTitle
-            subVC.selectAuthor = itemAuthor
-            subVC.selectPublisherName = itemPublisherName
             
-            let tata: String = (itemPrice?.description)!
-            subVC.selectPrice = tata
-            subVC.selectCaption = itemCaption
-            subVC.selectReviewAverage = itemReviewAverage
-            subVC.selectSalesDate = itemSalesDate
+            subVC.selectedImg = selectedImage
             subVC.selectBookData = selectItemData
         }
     }
@@ -184,9 +155,7 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
             print("Error : \(err.localizedDescription)")
             return UIImage(named: "default")
         }
-        // return UIImage()
     }
-    
 }
 
 //extension CollectionViewController: bookDataProtocol {

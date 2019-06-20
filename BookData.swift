@@ -21,14 +21,19 @@ class BookData{
     
     //var delegate: bookDataProtocol?
     
+    
+    
     func getBookData(completion: @escaping ([ItemData]?) -> Void){
+        
         //var postArray:[ItemData] = []
-        let url: URL = URL(string: "https://app.rakuten.co.jp/services/api/BooksTotal/Search/20170404?format=json&size=9&booksGenreId=001004008&sort=sales&applicationId=1070782050507759834")!
+        //APIのリクエストurl
+        let url: URL = URL(string: "https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404?format=json&size=9&booksGenreId=001004008&sort=reviewAverage&applicationId=1070782050507759834")!
         
         let task: URLSessionTask = URLSession.shared.dataTask(with: url, completionHandler: {data, response, error in
             
             guard let data = data else { return }
             do {
+                //jsonにデータをパース（解析）して格納
                 guard let json = try JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.allowFragments) as? [String: Any] else { return }
                 
                 print(json)
@@ -58,9 +63,8 @@ class BookData{
                 
                 for item in items {
                     guard let dic = item as? [String: Any] else { continue }
-//                    print(dic)
+
                     let hoge = dic["Item"] as! [String: Any]
-          //          print(hoge["title"])
                     
                     //let hoge = ItemData(data: dic)
                     
@@ -75,37 +79,6 @@ class BookData{
                 completion(itemArray)
                 print(itemArray)
                 
-                /*
-               // self.delegate?.applyData(itemData: self.itemArray)
-                if let items = json["Items"] as? [Any], let itemFirst = items.first as? [String: Any], let item = itemFirst["Item"] as? [String: Any] {
-                    //各データを格納
-                    let title = item["title"] as? String ?? ""
-                    let author = item["author"] as? String ?? ""
-                    let publisherName = item["publisherName"] as? String ?? ""
-                    let itemPrice = item["itemPrice"] as? Int
-                    let itemCaption = item["itemCaption"] as? String ?? ""
-                    let salesDate = item["salesDate"] as? String ?? ""
-                    let reviewAverage = item["reviewAverage"] as? String ?? ""
-                    let mediumImageUrl = item["mediumImageUrl"] as? String ?? ""
-                    let largeImageUrl = item["largeImageUrl"] as? String ?? ""
-                    print(item)
-//                    print("😄下がpostArrayだよ")
-//                    postArray.append(ItemData(data: item))
-//                    print(postArray)
-//
-                    //確認用のprint
-                    print(title)
-                    print(author)
-                    print(publisherName)
-                    print(itemPrice!)
-                    print(itemCaption)
-                    print(salesDate)
-                    print(reviewAverage)
-                    print(mediumImageUrl)
-                    print(largeImageUrl)
-                    
-                }
- */
             } catch {
                 completion(nil)
                 //エラー処理
@@ -114,4 +87,6 @@ class BookData{
         })
         task.resume()
     }
+
+    
 }
