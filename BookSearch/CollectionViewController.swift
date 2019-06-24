@@ -13,22 +13,26 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
     
     var selectedImage: UIImage?
     var selectItemData: ItemData?
+    var currentPage: Int = 0
     
     //private let bookData = BookData()
     private var itemData: [ItemData] = [] {
         didSet{
-            self.collectionView.reloadData()
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+            }
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        currentPage += 1
         guard let fl = collectionView?.collectionViewLayout as? UICollectionViewFlowLayout else { return }
         fl.headerReferenceSize = CGSize(width: self.view.bounds.width, height: 30)
         
         //self.bookData.delegate = self
         let bookData = BookData()
-        bookData.getBookData { [weak self] items in
+        bookData.getBookData(page: currentPage) { [weak self] items in
             guard let self = self else { return }
             guard let items = items else {
                 //データが取得できませんでした。
@@ -88,27 +92,25 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
         print(item.largeImageUrl!)
         //item.mediumImageUrl imageを作成
         if let url = item.largeImageUrl {
-            imageView.image = getImageByUrl(url: url)
+            imageView.image = getImageByUrl(urlString: url)
         }
         return cell
     }
     
     // Cell が選択された場合
-    override func collectionView(_ collectionView: UICollectionView,
-                                 didSelectItemAt indexPath: IndexPath) {
-        
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // [indexPath.row] から画像名を探し、UImage を設定
         let item = self.itemData[indexPath.row]
-        
+
         print(item.isLiked)
-        
+
         let selectItemData = self.itemData[indexPath.row]
         print(selectItemData.title)
-        
+
         self.selectItemData = selectItemData
-        
+
         if let url = item.largeImageUrl {
-            selectedImage = getImageByUrl(url: url)
+            selectedImage = getImageByUrl(urlString: url)
         }
         if selectedImage != nil {
             // SubViewController へ遷移するために Segue を呼び出す
@@ -130,6 +132,30 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
         }
     }
     
+    override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if indexPath.row == itemData.count - 1 {
+            loadMore()
+        }
+    }
+    
+    func loadMore() {
+        //self.bookData.delegate = self
+        //APIの表示ページをプラス1する
+        currentPage += 1
+        
+        let bookData = BookData()
+        bookData.getBookData(page: currentPage) { [weak self] items in
+            guard let self = self else { return }
+            guard let items = items else {
+                //データが取得できませんでした。
+                //self.itemData = []
+                return
+            }
+            self.itemData.append(contentsOf: items)
+        }
+        
+    }
+    
     
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
@@ -146,10 +172,12 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
         return UICollectionReusableView()
     }
     
-    func getImageByUrl(url: String) -> UIImage?{
-        let url = URL(string: url)
+    func getImageByUrl(urlString: String) -> UIImage?{
+        guard let url = URL(string: urlString) else {
+            return nil
+        }
         do {
-            let data = try Data(contentsOf: url!)
+            let data = try Data(contentsOf: url)
             return UIImage(data: data)!
         } catch let err {
             print("Error : \(err.localizedDescription)")

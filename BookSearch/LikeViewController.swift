@@ -54,18 +54,21 @@ class LikeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     
                     // bookDataクラスを生成して受け取ったデータを設定する
                     
-                    guard let valueDictionary = snapshot.value as? [String: Any] else {return}
+                    guard let valueDictionary = snapshot.value as? [String: Any] else { return }
                     let bookData = ItemData(data: valueDictionary)
+                    
+                    print(bookData.itemPrice)
+                    
+                    print(bookData.itemPrice)
                     self.bookArray.insert(bookData, at: 0)
+
                     // TableViewを再表示する
                     self.tableView.reloadData()
-                    
                     
                 })
                 // 要素が変更されたら該当のデータをpostArrayから一度削除した後に新しいデータを追加してTableViewを再表示する
                 booksRef.observe(.childChanged, with: { snapshot in
                     print("DEBUG_PRINT: .childChangedイベントが発生しました。")
-                    
                     
                     // ItemDataクラスを生成して受け取ったデータを設定する
                     guard let valueDictionary = snapshot.value as? [String: Any] else {return}
@@ -78,7 +81,6 @@ class LikeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                             index = self.bookArray.index(of: book)!
                             break
                         }
-                        
                         
                         // 差し替えるため一度削除する
                         self.bookArray.remove(at: index)
@@ -155,14 +157,15 @@ class LikeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     //セルがタップされた際に書籍詳細画面に遷移するメソッド
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath:IndexPath) {
-        print(bookArray[indexPath.row])
+        print(self.bookArray[indexPath.row].itemPrice)
+        
         
         //DetailsViewControllerに渡す値をセット
         selectCell = bookArray[indexPath.row]
         
         if let url = selectCell.largeImageUrl {
-            print(selectCell.largeImageUrl)
-            selectedImage = getImageByUrl(url: url)
+            print(selectCell.itemPrice)
+            selectedImage = getImageByUrl(urlString: url)
         }
         
         //DetailsViewControllerへ遷移するSegueを呼び出す
@@ -177,6 +180,7 @@ class LikeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             }
             
             //DetailsViewControllerに選択したセル情報を設定する
+            
             subVC.selectBookData = selectCell
             subVC.selectedImg = self.selectedImage
         }
@@ -192,10 +196,12 @@ class LikeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     //文字列を元にimageを取得するメソッド
-    func getImageByUrl(url: String) -> UIImage?{
-        let url = URL(string: url)
+    func getImageByUrl(urlString: String) -> UIImage?{
+        guard let url = URL(string: urlString) else {
+            return nil
+        }
         do {
-            let data = try Data(contentsOf: url!)
+            let data = try Data(contentsOf: url)
             return UIImage(data: data)!
         } catch let err {
             print("Error : \(err.localizedDescription)")

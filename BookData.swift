@@ -23,11 +23,19 @@ class BookData{
     
     
     
-    func getBookData(completion: @escaping ([ItemData]?) -> Void){
+    func getBookData(page: Int, completion: @escaping ([ItemData]?) -> Void){
         
         //var postArray:[ItemData] = []
+        
+        //書籍サイズの変数
+        let size: Int = 9
+        
         //APIのリクエストurl
-        let url: URL = URL(string: "https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404?format=json&size=9&booksGenreId=001004008&sort=reviewAverage&applicationId=1070782050507759834")!
+        let bookApi: String = "https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404?format=json&size=\(size)&booksGenreId=001&page=\(page)&applicationId=1070782050507759834"
+        
+        var count: Int = 0
+        
+        guard let url: URL = URL(string: bookApi) else { return }
         
         let task: URLSessionTask = URLSession.shared.dataTask(with: url, completionHandler: {data, response, error in
             
@@ -38,6 +46,7 @@ class BookData{
                 
                 print(json)
                 print(json.count)
+                //print(json["pageCount"]!)
                 
                 guard let items = json["Items"] as? [Any] else {
                     
@@ -71,8 +80,7 @@ class BookData{
                     itemArray.append(ItemData(data: hoge))
                     print("下がitemArrayだよ")
                     print(itemArray)
-                    
-                    
+                 
                     
                 }
                 
@@ -85,8 +93,8 @@ class BookData{
             }
             
         })
+       
+        
         task.resume()
     }
-
-    
 }

@@ -36,7 +36,6 @@ class DetailsViewController: UIViewController {
         
         // 辞書を作成してFirebaseに保存する
         let postRef = Database.database().reference().child(Const.PostPath).child(selectBookData.isbn!)
-        
         if selectBookData.isLiked{
             //削除
             postRef.removeValue()
@@ -49,13 +48,43 @@ class DetailsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    
+            //itemCaptionが空だったら文字列を代入する
+            if selectBookData.itemCaption?.isEmpty ?? true {
+                selectBookData.itemCaption = "概要が登録されていません"
+            }
+            
+            //各値をUI部品に設定
+            print(selectBookData)
+            print(selectBookData.itemPrice)
+            
+            titleLabel.text = selectBookData.title
+            sizeLabel.text = selectBookData.size
+            authorLabel.text = selectBookData.author
+            publisherNameLabel.text = selectBookData.publisherName
+            itemPriceLabel.text = ("￥\(selectBookData.itemPrice!)")
+            reviewAverageLabel.text = ("レビュー平均：\(selectBookData.reviewAverage!)")
+            salesDateLabel.text = ("発売日：\(selectBookData.salesDate!)")
+            itemCaptionLabel.text = selectBookData.itemCaption
+            
+            imageView.image = selectedImg
+            // 画像のアスペクト比を維持しUIImageViewサイズに収まるように表示
+            imageView.contentMode = UIView.ContentMode.scaleAspectFit
+            
+            fetchFavorite()
+        }
         
+        /*
         //itemCaptionが空だったら文字列を代入する
         if selectBookData.itemCaption?.isEmpty ?? true {
             selectBookData.itemCaption = "概要が登録されていません"
         }
         
         //各値をUI部品に設定
+        
+        
+        print(selectBookData.itemPrice)
+        
         titleLabel.text = selectBookData.title
         sizeLabel.text = selectBookData.size
         authorLabel.text = selectBookData.author
@@ -70,7 +99,7 @@ class DetailsViewController: UIViewController {
         imageView.contentMode = UIView.ContentMode.scaleAspectFit
         
         fetchFavorite()
-    }
+ */
     
     
     func fetchFavorite() {

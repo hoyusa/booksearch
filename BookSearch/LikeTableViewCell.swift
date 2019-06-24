@@ -28,17 +28,19 @@ class LikeTableViewCell: UITableViewCell {
     func setItemData(_ bookData: ItemData) {
         if let url = bookData.largeImageUrl {
             print(bookData.largeImageUrl)
-            bookImageView.image = getImageByUrl(url: url)
+            bookImageView.image = getImageByUrl(urlString: url)
         }
         
         self.titleLabel.text = bookData.title
         self.dateLabel.text = ("発売日：\(bookData.salesDate!)")
     }
     
-    func getImageByUrl(url: String) -> UIImage?{
-        let url = URL(string: url)
+    func getImageByUrl(urlString: String) -> UIImage?{
+        guard let url = URL(string: urlString) else {
+            return nil
+        }
         do {
-            let data = try Data(contentsOf: url!)
+            let data = try Data(contentsOf: url)
             return UIImage(data: data)!
         } catch let err {
             print("Error : \(err.localizedDescription)")
