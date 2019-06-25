@@ -7,19 +7,19 @@
 //
 
 import UIKit
-
+//カテゴリ欄のライブラリ
+import BTNavigationDropdownMenu
 private let reuseIdentifier = "Cell"
-
 
 class CollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
-   
-    
+    var menuView: BTNavigationDropdownMenu!
     var selectedImage: UIImage?
     var selectItemData: ItemData?
     var currentPage: Int = 0
+    var bookType: Int = 0
     
-    private var bookType: BookType = .Comic
+    //private var bookType: BookType = .Comic
     
     //private let bookData = BookData()
     private var itemData: [ItemData] = [] {
@@ -33,7 +33,7 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print(self.bookType.title)
+        //print(self.bookType.title)
         currentPage += 1
         guard let fl = collectionView?.collectionViewLayout as? UICollectionViewFlowLayout else { return }
         fl.headerReferenceSize = CGSize(width: self.view.bounds.width, height: 30)
@@ -49,7 +49,54 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
             }
             self.itemData = items
         }
+        setMenu()
+    }
+    
+    //プルダウンメニューのメソッド
+    func setMenu() {
+        let items = ["全て", "単行本", "文庫", "新書", "全集・双書", "事・辞典", "図鑑", "絵本", "カセット,CD", "コミック"]
         
+        self.navigationController?.navigationBar.isTranslucent = false
+        self.navigationController?.navigationBar.barTintColor = UIColor(red: 0.0/255.0, green:180/255.0, blue:220/255.0, alpha: 1.0)
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        
+        menuView = BTNavigationDropdownMenu(navigationController: self.navigationController, containerView: self.navigationController!.view, title: "カテゴリ", items: items)
+        
+        //オプションです
+        /*
+         menuView.cellHeight = 50
+         menuView.cellBackgroundColor = self.navigationController?.navigationBar.barTintColor
+         menuView.cellSelectionColor = UIColor(red: 0.0/255.0, green:160.0/255.0, blue:195.0/255.0, alpha: 1.0)
+         menuView.shouldKeepSelectedCellColor = true
+         menuView.cellTextLabelColor = UIColor.whiteColor()
+         menuView.cellTextLabelFont = UIFont(name: "Avenir-Heavy", size: 17)
+         menuView.cellTextLabelAlignment = .Left // .Center // .Right // .Left
+         menuView.arrowPadding = 15
+         menuView.animationDuration = 0.5
+         menuView.maskBackgroundColor = UIColor.blackColor()
+         menuView.maskBackgroundOpacity = 0.3
+         */
+        menuView.didSelectItemAtIndexHandler = {(indexPath: Int) -> () in
+            print("Did select item at index: \(indexPath)")
+            if self.bookType != indexPath {
+                self.bookType = indexPath
+                print(self.bookType)
+                
+                let bookData = BookData()
+                bookData.getBookData(bookType: self.bookType, page: self.currentPage) { [weak self] items in
+                    guard let self = self else { return }
+                    guard let items = items else {
+                        //データが取得できませんでした。
+                        //self.itemData = []
+                        return
+                    }
+                    self.itemData.removeAll()
+                    self.itemData.append(contentsOf: items)
+                   
+                }
+            }
+        }
+        self.navigationItem.titleView = menuView
     }
     
     //セクションの数を指定するメソッド
@@ -164,7 +211,7 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
         
     }
     
-    
+    /*
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
         guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "SectionHeader", for: indexPath) as? SectionHeader
@@ -179,7 +226,7 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
         }
         return UICollectionReusableView()
     }
-    
+    */
     func getImageByUrl(urlString: String) -> UIImage?{
         guard let url = URL(string: urlString) else {
             return nil

@@ -21,7 +21,7 @@ class BookData{
     
     //var delegate: bookDataProtocol?
     
-    func getBookData(bookType: BookType, page: Int, completion: @escaping ([ItemData]?) -> Void){
+    func getBookData(bookType: Int, page: Int, completion: @escaping ([ItemData]?) -> Void){
         
         //var postArray:[ItemData] = []
         
@@ -29,7 +29,7 @@ class BookData{
         let size: Int = 9
         
         //APIのリクエストurl
-        let bookApi: String = "https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404?format=json&size=\(bookType.rawValue)&booksGenreId=001&page=\(page)&applicationId=1070782050507759834"
+        let bookApi: String = "https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404?format=json&size=\(bookType)&booksGenreId=001&page=\(page)&applicationId=1070782050507759834"
         
         var count: Int = 0
         
