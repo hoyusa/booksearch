@@ -7,13 +7,19 @@
 //
 
 import UIKit
+
 private let reuseIdentifier = "Cell"
 
+
 class CollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
+    
+   
     
     var selectedImage: UIImage?
     var selectItemData: ItemData?
     var currentPage: Int = 0
+    
+    private var bookType: BookType = .Comic
     
     //private let bookData = BookData()
     private var itemData: [ItemData] = [] {
@@ -26,13 +32,15 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        print(self.bookType.title)
         currentPage += 1
         guard let fl = collectionView?.collectionViewLayout as? UICollectionViewFlowLayout else { return }
         fl.headerReferenceSize = CGSize(width: self.view.bounds.width, height: 30)
         
         //self.bookData.delegate = self
         let bookData = BookData()
-        bookData.getBookData(page: currentPage) { [weak self] items in
+        bookData.getBookData(bookType: self.bookType, page: currentPage) { [weak self] items in
             guard let self = self else { return }
             guard let items = items else {
                 //データが取得できませんでした。
@@ -144,7 +152,7 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
         currentPage += 1
         
         let bookData = BookData()
-        bookData.getBookData(page: currentPage) { [weak self] items in
+        bookData.getBookData(bookType: self.bookType, page: currentPage) { [weak self] items in
             guard let self = self else { return }
             guard let items = items else {
                 //データが取得できませんでした。

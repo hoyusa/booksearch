@@ -11,7 +11,7 @@ target 'BookSearch' do
   pod 'Firebase/Core'
   pod 'Firebase/Auth'
   pod 'Firebase/Database'
-  pod 'SVProgressHUD','2.2.5'
   pod "SwiftyJSON", ">= 2.2"
+  pod 'SVProgressHUD','2.2.5'
 
 end
