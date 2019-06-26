@@ -7,8 +7,9 @@
 //
 
 import UIKit
-//カテゴリ欄のライブラリ
 import BTNavigationDropdownMenu
+import SVProgressHUD
+
 private let reuseIdentifier = "Cell"
 
 class CollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
@@ -40,6 +41,7 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
         
         //self.bookData.delegate = self
         let bookData = BookData()
+        SVProgressHUD.show()
         bookData.getBookData(bookType: self.bookType, page: currentPage) { [weak self] items in
             guard let self = self else { return }
             guard let items = items else {
@@ -48,6 +50,7 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
                 return
             }
             self.itemData = items
+            SVProgressHUD.dismiss()
         }
         setMenu()
     }
@@ -79,6 +82,7 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
         menuView.didSelectItemAtIndexHandler = {(indexPath: Int) -> () in
             print("Did select item at index: \(indexPath)")
             if self.bookType != indexPath {
+                SVProgressHUD.show()
                 self.bookType = indexPath
                 print(self.bookType)
                 
@@ -92,6 +96,7 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
                     }
                     self.itemData.removeAll()
                     self.itemData.append(contentsOf: items)
+                    SVProgressHUD.dismiss()
                    
                 }
             }
@@ -160,7 +165,7 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
         print(item.isLiked)
 
         let selectItemData = self.itemData[indexPath.row]
-        print(selectItemData.title)
+        print(selectItemData.title!)
 
         self.selectItemData = selectItemData
 
@@ -197,8 +202,8 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
         //self.bookData.delegate = self
         //APIの表示ページをプラス1する
         currentPage += 1
-        
         let bookData = BookData()
+        SVProgressHUD.show()
         bookData.getBookData(bookType: self.bookType, page: currentPage) { [weak self] items in
             guard let self = self else { return }
             guard let items = items else {
@@ -207,6 +212,7 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
                 return
             }
             self.itemData.append(contentsOf: items)
+            SVProgressHUD.dismiss()
         }
         
     }

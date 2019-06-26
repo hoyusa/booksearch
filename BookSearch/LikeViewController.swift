@@ -10,6 +10,8 @@ import UIKit
 import Firebase
 import FirebaseAuth
 import FirebaseDatabase
+import SVProgressHUD
+import DZNEmptyDataSet
 
 class LikeViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
@@ -24,8 +26,13 @@ class LikeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.delegate = self
         tableView.dataSource = self
+        tableView.delegate = self
+        
+        //TableViewに何も登録されていない時に表示する画像のデリゲート指定
+        tableView.emptyDataSetSource = self as DZNEmptyDataSetSource
+        tableView.emptyDataSetDelegate = self as DZNEmptyDataSetDelegate
+        tableView.tableFooterView = UIView()
         
         // テーブルセルのタップを有効にする
         tableView.allowsSelection = true
@@ -57,11 +64,8 @@ class LikeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     guard let valueDictionary = snapshot.value as? [String: Any] else { return }
                     let bookData = ItemData(data: valueDictionary)
                     
-                    print(bookData.itemPrice)
-                    
-                    print(bookData.itemPrice)
                     self.bookArray.insert(bookData, at: 0)
-
+                    
                     // TableViewを再表示する
                     self.tableView.reloadData()
                     
@@ -148,6 +152,8 @@ class LikeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             let postRef = Database.database().reference().child(Const.PostPath).child(selectCellData.isbn!)
             //Firebaseの選択セル情報を削除
             postRef.removeValue()
+            SVProgressHUD.showSuccess(withStatus: "解除")
+            SVProgressHUD.dismiss(withDelay: 0.5)
         }
     }
     
@@ -157,14 +163,12 @@ class LikeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     //セルがタップされた際に書籍詳細画面に遷移するメソッド
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath:IndexPath) {
-        print(self.bookArray[indexPath.row].itemPrice)
-        
+        tableView.deselectRow(at: indexPath, animated: true)
         
         //DetailsViewControllerに渡す値をセット
         selectCell = bookArray[indexPath.row]
         
         if let url = selectCell.largeImageUrl {
-            print(selectCell.itemPrice)
             selectedImage = getImageByUrl(urlString: url)
         }
         
@@ -208,6 +212,24 @@ class LikeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             return UIImage(named: "default")
         }
     }
-    
-}
 
+}
+//追加箇所6/25
+//TableViewの中身が空だったら画像が表示されるメソッド
+extension LikeViewController: DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
+    func image(forEmptyDataSet scrollView: UIScrollView!) -> UIImage! {
+        
+        return UIImage(named: "likebook")
+        
+    }
+    
+    func title(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
+        
+        let text = "お気に入り書籍が登録されていません"
+        
+        let font = UIFont.boldSystemFont(ofSize: 20)
+        
+        return NSAttributedString(string: text, attributes: [NSAttributedString.Key.font: font])
+        
+    }
+}

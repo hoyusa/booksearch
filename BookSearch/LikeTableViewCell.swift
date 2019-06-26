@@ -25,9 +25,9 @@ class LikeTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
+    
     func setItemData(_ bookData: ItemData) {
         if let url = bookData.largeImageUrl {
-            print(bookData.largeImageUrl)
             bookImageView.image = getImageByUrl(urlString: url)
         }
         

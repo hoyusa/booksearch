@@ -10,6 +10,7 @@ import UIKit
 import Firebase
 import FirebaseAuth
 import FirebaseDatabase
+import SVProgressHUD
 
 class DetailsViewController: UIViewController {
     
@@ -33,14 +34,19 @@ class DetailsViewController: UIViewController {
     
     @IBAction func likeButton(_ sender: Any) {
         print("likeButtonが押されたよ")
+        SVProgressHUD.show()
         
         // 辞書を作成してFirebaseに保存する
         let postRef = Database.database().reference().child(Const.PostPath).child(selectBookData.isbn!)
         if selectBookData.isLiked{
             //削除
             postRef.removeValue()
+            SVProgressHUD.showSuccess(withStatus: "解除")
+            SVProgressHUD.dismiss(withDelay: 0.5)
         } else {
             postRef.setValue(selectBookData.postData)
+            SVProgressHUD.showSuccess(withStatus: "登録")
+            SVProgressHUD.dismiss(withDelay: 0.5)
         }
         updateButton(isLiked: !selectBookData.isLiked)
         
@@ -56,7 +62,7 @@ class DetailsViewController: UIViewController {
             
             //各値をUI部品に設定
             print(selectBookData)
-            print(selectBookData.itemPrice)
+            print(selectBookData.itemPrice!)
             
             titleLabel.text = selectBookData.title
             sizeLabel.text = selectBookData.size
@@ -109,8 +115,8 @@ class DetailsViewController: UIViewController {
         //let query = postRef.queryOrdered(byChild: "isbn").queryEqual(toValue: selectBookData.isbn)
         
         postRef.observeSingleEvent(of: .value, with:  { (snapshot) in
-            print(snapshot.value)
-            guard let postDict = snapshot.value as? [String : Any] else {
+            print(snapshot.value!)
+            guard (snapshot.value as? [String : Any]) != nil else {
                 self.updateButton(isLiked: false)
                 return
             }

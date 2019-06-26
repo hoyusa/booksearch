@@ -6,6 +6,11 @@
 //  Copyright © 2019 許 裕士. All rights reserved.
 //
 
+
+
+
+
+//enumの使い方を教わった時のサンプルファイルです
 import Foundation
 
 enum BookType: Int, CaseIterable {

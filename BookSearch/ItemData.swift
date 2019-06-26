@@ -23,13 +23,7 @@ class ItemData: NSObject {
     var reviewAverage: String?
     var mediumImageUrl: String?
     var largeImageUrl: String?
-   // var likes: [String] = []
     var isLiked: Bool = false
-    
-    //SwiftyJson
-    /*init(_ json: JSON) {
-     title = json["title"].string
-     }*/
     
     init(data: [String: Any]) {
         self.title = data["title"] as? String ?? ""
@@ -44,11 +38,12 @@ class ItemData: NSObject {
         self.mediumImageUrl = data["mediumImageUrl"] as? String ?? ""
         self.largeImageUrl = data["largeImageUrl"] as? String ?? ""
         
+        /*
         print("😄\(mediumImageUrl)")
         print(title)
         print(publisherName)
         print(itemPrice)
-        
+        */
     }
     
     var postData: [String: Any] {
