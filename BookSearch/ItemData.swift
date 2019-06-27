@@ -39,11 +39,11 @@ class ItemData: NSObject {
         self.largeImageUrl = data["largeImageUrl"] as? String ?? ""
         
         /*
-        print("😄\(mediumImageUrl)")
-        print(title)
-        print(publisherName)
-        print(itemPrice)
-        */
+         print("😄\(mediumImageUrl)")
+         print(title)
+         print(publisherName)
+         print(itemPrice)
+         */
     }
     
     var postData: [String: Any] {
@@ -54,27 +54,27 @@ class ItemData: NSObject {
                 "itemCaption": self.itemCaption!,
                 "publisherName": self.publisherName!,
                 "itemPrice": self.itemPrice!,
-            "reviewAverage": self.reviewAverage!,
-            "salesDate": self.salesDate!,
-            "mediumImageUrl": self.mediumImageUrl!,
-            "largeImageUrl": self.largeImageUrl!]
+                "reviewAverage": self.reviewAverage!,
+                "salesDate": self.salesDate!,
+                "mediumImageUrl": self.mediumImageUrl!,
+                "largeImageUrl": self.largeImageUrl!]
     }
     
     /*
-    init(snapshot: DataSnapshot, myId: String) {
-        self.id = snapshot.key
-        let valueDictionary = snapshot.value as! [String: Any]
-        print(id)
-        
-        if let likes = valueDictionary["likes"] as? [String] {
-            self.likes = likes
-        }
-        
-        for likeId in self.likes {
-            if likeId == myId {
-                self.isLiked = true
-                break
-            }
-        }
-    }*/
+     init(snapshot: DataSnapshot, myId: String) {
+     self.id = snapshot.key
+     let valueDictionary = snapshot.value as! [String: Any]
+     print(id)
+     
+     if let likes = valueDictionary["likes"] as? [String] {
+     self.likes = likes
+     }
+     
+     for likeId in self.likes {
+     if likeId == myId {
+     self.isLiked = true
+     break
+     }
+     }
+     }*/
 }

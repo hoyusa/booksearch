@@ -46,7 +46,7 @@ class LikeTableViewCell: UITableViewCell {
             print("Error : \(err.localizedDescription)")
             return UIImage(named: "default")
         }
-
+        
     }
     
 }

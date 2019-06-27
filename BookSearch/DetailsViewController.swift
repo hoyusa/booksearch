@@ -32,20 +32,23 @@ class DetailsViewController: UIViewController {
     @IBOutlet weak var itemCaptionLabel: UILabel!
     @IBOutlet weak var likeSuter: UIButton!
     
+    var userId: String?
+    
     @IBAction func likeButton(_ sender: Any) {
         print("likeButtonが押されたよ")
         SVProgressHUD.show()
+        guard let userId = userId else { return }
         
         // 辞書を作成してFirebaseに保存する
-        let postRef = Database.database().reference().child(Const.PostPath).child(selectBookData.isbn!)
+        let postRef = Database.database().reference().child(Const.PostPath).child(userId).child(selectBookData.isbn!)
         if selectBookData.isLiked{
             //削除
             postRef.removeValue()
-            SVProgressHUD.showSuccess(withStatus: "解除")
+            SVProgressHUD.showSuccess(withStatus: "お気に入り解除")
             SVProgressHUD.dismiss(withDelay: 0.5)
         } else {
             postRef.setValue(selectBookData.postData)
-            SVProgressHUD.showSuccess(withStatus: "登録")
+            SVProgressHUD.showSuccess(withStatus: "お気に入り登録")
             SVProgressHUD.dismiss(withDelay: 0.5)
         }
         updateButton(isLiked: !selectBookData.isLiked)
@@ -54,49 +57,22 @@ class DetailsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    
-            //itemCaptionが空だったら文字列を代入する
-            if selectBookData.itemCaption?.isEmpty ?? true {
-                selectBookData.itemCaption = "概要が登録されていません"
-            }
-            
-            //各値をUI部品に設定
-            print(selectBookData)
-            print(selectBookData.itemPrice!)
-            
-            titleLabel.text = selectBookData.title
-            sizeLabel.text = selectBookData.size
-            authorLabel.text = selectBookData.author
-            publisherNameLabel.text = selectBookData.publisherName
-            itemPriceLabel.text = ("￥\(selectBookData.itemPrice!)")
-            reviewAverageLabel.text = ("レビュー平均：\(selectBookData.reviewAverage!)")
-            salesDateLabel.text = ("発売日：\(selectBookData.salesDate!)")
-            itemCaptionLabel.text = selectBookData.itemCaption
-            
-            imageView.image = selectedImg
-            // 画像のアスペクト比を維持しUIImageViewサイズに収まるように表示
-            imageView.contentMode = UIView.ContentMode.scaleAspectFit
-            
-            fetchFavorite()
-        }
         
-        /*
         //itemCaptionが空だったら文字列を代入する
         if selectBookData.itemCaption?.isEmpty ?? true {
             selectBookData.itemCaption = "概要が登録されていません"
         }
         
         //各値をUI部品に設定
-        
-        
-        print(selectBookData.itemPrice)
+        print(selectBookData)
+        print(selectBookData.itemPrice!)
         
         titleLabel.text = selectBookData.title
         sizeLabel.text = selectBookData.size
         authorLabel.text = selectBookData.author
         publisherNameLabel.text = selectBookData.publisherName
         itemPriceLabel.text = ("￥\(selectBookData.itemPrice!)")
-        reviewAverageLabel.text = ("レビュー平均：\(selectBookData.reviewAverage!)")
+        reviewAverageLabel.text = ("レビュー評価：\(selectBookData.reviewAverage!)")
         salesDateLabel.text = ("発売日：\(selectBookData.salesDate!)")
         itemCaptionLabel.text = selectBookData.itemCaption
         
@@ -104,15 +80,15 @@ class DetailsViewController: UIViewController {
         // 画像のアスペクト比を維持しUIImageViewサイズに収まるように表示
         imageView.contentMode = UIView.ContentMode.scaleAspectFit
         
+        userId = Auth.auth().currentUser?.uid
+        
         fetchFavorite()
- */
+    }
     
     
     func fetchFavorite() {
-        
-        //let postRef = Database.database().reference().child(Const.PostPath)
-        let postRef = Database.database().reference().child(Const.PostPath).child(selectBookData.isbn!)
-        //let query = postRef.queryOrdered(byChild: "isbn").queryEqual(toValue: selectBookData.isbn)
+        guard let userId = userId else { return }
+        let postRef = Database.database().reference().child(Const.PostPath).child(userId).child(selectBookData.isbn!)
         
         postRef.observeSingleEvent(of: .value, with:  { (snapshot) in
             print(snapshot.value!)

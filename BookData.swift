@@ -25,8 +25,6 @@ class BookData{
         //APIのリクエストurl
         let bookApi: String = "https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404?format=json&size=\(bookType)&booksGenreId=001&page=\(page)&applicationId=1070782050507759834"
         
-        
-        
         guard let url: URL = URL(string: bookApi) else { return }
         
         let task: URLSessionTask = URLSession.shared.dataTask(with: url, completionHandler: {data, response, error in
@@ -56,7 +54,7 @@ class BookData{
                 
                 for item in items {
                     guard let dic = item as? [String: Any] else { continue }
-
+                    
                     let hoge = dic["Item"] as! [String: Any]
                     
                     //let hoge = ItemData(data: dic)
@@ -64,7 +62,6 @@ class BookData{
                     itemArray.append(ItemData(data: hoge))
                     print("下がitemArrayだよ")
                     print(itemArray)
-                 
                     
                 }
                 

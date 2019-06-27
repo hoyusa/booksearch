@@ -20,7 +20,7 @@ class LikeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var bookArray: [ItemData] = []
     var selectCell: ItemData!
     var selectedImage: UIImage?
-    
+    var userId: String?
     // DatabaseのobserveEventの登録状態を表す
     var observing = false
     
@@ -33,6 +33,8 @@ class LikeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         tableView.emptyDataSetSource = self as DZNEmptyDataSetSource
         tableView.emptyDataSetDelegate = self as DZNEmptyDataSetDelegate
         tableView.tableFooterView = UIView()
+        
+        
         
         // テーブルセルのタップを有効にする
         tableView.allowsSelection = true
@@ -49,13 +51,18 @@ class LikeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     override func viewWillAppear(_ animated: Bool) {
+    
         super.viewWillAppear(animated)
         print("DEBUG_PRINT: viewWillAppear")
         
+        userId = Auth.auth().currentUser?.uid
+        
         if Auth.auth().currentUser != nil {
+            
+            guard let userId = userId else { return }
             if self.observing == false {
                 // 要素が追加されたらbookArrayに追加してTableViewを再表示する
-                let booksRef = Database.database().reference().child(Const.PostPath)
+                let booksRef = Database.database().reference().child(Const.PostPath).child(userId)
                 booksRef.observe(.childAdded, with: { snapshot in
                     print("DEBUG_PRINT: .childAddedイベントが発生しました。")
                     
@@ -144,15 +151,16 @@ class LikeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     //セルのスライド削除をするデリゲートメソッド
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        guard let userId = userId else { return }
         
         if editingStyle == .delete {
             //選択したセルの情報をselectCellDataに格納
             let selectCellData = self.bookArray[indexPath.row]
             //postRefにFirevaseの選択したセル情報を格納する
-            let postRef = Database.database().reference().child(Const.PostPath).child(selectCellData.isbn!)
+            let postRef = Database.database().reference().child(Const.PostPath).child(userId).child(selectCellData.isbn!)
             //Firebaseの選択セル情報を削除
             postRef.removeValue()
-            SVProgressHUD.showSuccess(withStatus: "解除")
+            SVProgressHUD.showSuccess(withStatus: "お気に入り解除")
             SVProgressHUD.dismiss(withDelay: 0.5)
         }
     }
@@ -212,9 +220,9 @@ class LikeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             return UIImage(named: "default")
         }
     }
-
+    
 }
-//追加箇所6/25
+
 //TableViewの中身が空だったら画像が表示されるメソッド
 extension LikeViewController: DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     func image(forEmptyDataSet scrollView: UIScrollView!) -> UIImage! {

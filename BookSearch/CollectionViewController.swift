@@ -57,7 +57,7 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
     
     //プルダウンメニューのメソッド
     func setMenu() {
-        let items = ["全て", "単行本", "文庫", "新書", "全集・双書", "事・辞典", "図鑑", "絵本", "カセット,CD", "コミック"]
+        let items = ["全て", "単行本", "小説", "新書", "全集・双書", "辞典", "図鑑", "絵本", "カセット・CD", "コミック"]
         
         self.navigationController?.navigationBar.isTranslucent = false
         self.navigationController?.navigationBar.barTintColor = UIColor(red: 0.0/255.0, green:180/255.0, blue:220/255.0, alpha: 1.0)
@@ -65,24 +65,11 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
         
         menuView = BTNavigationDropdownMenu(navigationController: self.navigationController, containerView: self.navigationController!.view, title: "カテゴリ", items: items)
         
-        //オプションです
-        /*
-         menuView.cellHeight = 50
-         menuView.cellBackgroundColor = self.navigationController?.navigationBar.barTintColor
-         menuView.cellSelectionColor = UIColor(red: 0.0/255.0, green:160.0/255.0, blue:195.0/255.0, alpha: 1.0)
-         menuView.shouldKeepSelectedCellColor = true
-         menuView.cellTextLabelColor = UIColor.whiteColor()
-         menuView.cellTextLabelFont = UIFont(name: "Avenir-Heavy", size: 17)
-         menuView.cellTextLabelAlignment = .Left // .Center // .Right // .Left
-         menuView.arrowPadding = 15
-         menuView.animationDuration = 0.5
-         menuView.maskBackgroundColor = UIColor.blackColor()
-         menuView.maskBackgroundOpacity = 0.3
-         */
+        //メニューのセルをタップした時に呼び出されるメソッド
         menuView.didSelectItemAtIndexHandler = {(indexPath: Int) -> () in
             print("Did select item at index: \(indexPath)")
             if self.bookType != indexPath {
-                SVProgressHUD.show()
+                SVProgressHUD.show(withStatus: "\(items[indexPath])")
                 self.bookType = indexPath
                 print(self.bookType)
                 
@@ -96,8 +83,16 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
                     }
                     self.itemData.removeAll()
                     self.itemData.append(contentsOf: items)
+                    
+                    DispatchQueue.main.async {
+                        self.collectionView.reloadData()
+                        //self.collectionView.scrollsToTop = true
+                        self.collectionView.setContentOffset(.zero, animated: false)
+                        
+                        //self.collectionView.scrollToItem(at: <#T##IndexPath#>, at: <#T##UICollectionView.ScrollPosition#>, animated: <#T##Bool#>)
+                    }
                     SVProgressHUD.dismiss()
-                   
+                    
                 }
             }
         }
@@ -161,14 +156,14 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // [indexPath.row] から画像名を探し、UImage を設定
         let item = self.itemData[indexPath.row]
-
+        
         print(item.isLiked)
-
+        
         let selectItemData = self.itemData[indexPath.row]
         print(selectItemData.title!)
-
+        
         self.selectItemData = selectItemData
-
+        
         if let url = item.largeImageUrl {
             selectedImage = getImageByUrl(urlString: url)
         }
@@ -192,18 +187,20 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
         }
     }
     
+    //ページネーション機能のところ
     override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if indexPath.row == itemData.count - 1 {
             loadMore()
         }
     }
     
+    //APIの再リクエストを行なっている部分
     func loadMore() {
         //self.bookData.delegate = self
         //APIの表示ページをプラス1する
         currentPage += 1
         let bookData = BookData()
-        SVProgressHUD.show()
+        SVProgressHUD.show(withStatus: "取得中")
         bookData.getBookData(bookType: self.bookType, page: currentPage) { [weak self] items in
             guard let self = self else { return }
             guard let items = items else {
@@ -217,22 +214,7 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
         
     }
     
-    /*
-    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        
-        guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "SectionHeader", for: indexPath) as? SectionHeader
-            else {
-                fatalError("Could not find proper header")
-        }
-        
-        if kind == UICollectionView.elementKindSectionHeader {
-            header.sectionLabel.text = "section \(indexPath.section)"
-            print("DEBUG***section**\(indexPath.section)")
-            return header
-        }
-        return UICollectionReusableView()
-    }
-    */
+    //URLからイメージデータを取得するメソッド
     func getImageByUrl(urlString: String) -> UIImage?{
         guard let url = URL(string: urlString) else {
             return nil
@@ -246,6 +228,24 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
         }
     }
 }
+
+/*
+ override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+ 
+ guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "SectionHeader", for: indexPath) as? SectionHeader
+ else {
+ fatalError("Could not find proper header")
+ }
+ 
+ if kind == UICollectionView.elementKindSectionHeader {
+ header.sectionLabel.text = "section \(indexPath.section)"
+ print("DEBUG***section**\(indexPath.section)")
+ return header
+ }
+ return UICollectionReusableView()
+ }
+ */
+
 
 //extension CollectionViewController: bookDataProtocol {
 //    func applyData(itemData: [ItemData]) {
